@@ -70,6 +70,8 @@ def home():
             
     <a href='/api/v1.0/accidents'>/api/v1.0/accidents</a><br/>
     <a href='/api/v1.0/drivers'>/api/v1.0/drivers</a><br/>
+    <a href='/api/v1.0/accidents_by_city'>/api/v1.0/accidents_by_city</a><br/r>
+   
 
 </body>
 </html>
@@ -91,6 +93,37 @@ def accidents():
 def drivers():
     drivers_df = pd.read_sql("SELECT * FROM licensed_drivers", engine)
     return jsonify(drivers_df.to_dict(orient="records"))
+
+# Accidents grouped by city
+@app.route("/api/v1.0/accidents_by_city")
+def accidents_by_city():
+    city = request.args.get("city") 
+    
+    if city:
+        # Query for a specific city
+        query = text("""
+            SELECT City, COUNT(*) as accident_count
+            FROM accidents
+            WHERE City = :city
+            GROUP BY City
+        """)
+        result = pd.read_sql(query, engine, params={"city": city})
+    else:
+        # Query for all cities
+        query = text("""
+            SELECT City, COUNT(*) as accident_count
+            FROM accidents
+            GROUP BY City
+            ORDER BY accident_count DESC
+        """)
+        result = pd.read_sql(query, engine)
+
+    # Convert the result to JSON
+    return jsonify(result.to_dict(orient="records"))
+
+
+
+
 
 # Run Flask app
 if __name__ == "__main__":
