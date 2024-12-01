@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template, send_from_directory
 from sqlalchemy import create_engine, text
 import pandas as pd
+import os
 
 # Flask app setup
 app = Flask(__name__)
@@ -50,7 +51,7 @@ def home():
 """ + "".join(f'<option value="{key}">{value}</option>' for key, value in state_mapping.items()) + """
         </select>
         <br><br>
-
+        
         <!-- Select for Limit -->
         <label for="limit">Select Limit:</label>
         <select id="limit" name="limit">
@@ -71,7 +72,7 @@ def home():
     <a href='/api/v1.0/accidents'>/api/v1.0/accidents</a><br/>
     <a href='/api/v1.0/drivers'>/api/v1.0/drivers</a><br/>
     <a href='/api/v1.0/accidents_by_city'>/api/v1.0/accidents_by_city</a><br/r>
-   
+    <a href='/api/v1.0/graph'>/api/v1.0/graph</a><br/r>
 
 </body>
 </html>
@@ -88,6 +89,29 @@ def accidents():
         engine,
         params={"state": state, "limit": limit})
     return jsonify(accidents_df.to_dict(orient="records"))
+
+
+GRAPH_FOLDER = os.path.join(app.root_path, 'static/images')
+
+# List all available graph filenames in the static/images directory
+graph_files = ['day_night.png', 'hourly.png', 'daily.png', 'monthly.png', 'yearly.png', 
+               'yearly_severity.png', 'weather_condition.png', 'weather_severity.png', 
+               'humidity.png', 'temperature.png', 'visibility.png', 'infrastructure.png', 
+               'state_percapita.png', 'state.png', 'city.png']
+
+# A dictionary for explanations
+
+
+@app.route("/api/v1.0/graph")
+def graph():
+    # Render the template and pass the list of graph files and explanations
+    return render_template('graphs.html', graph_files=graph_files)
+
+# The URL to serve images should be '/graphs/<filename>'
+@app.route('/graphs/<filename>')
+def serve_graph(filename):
+    # Serve the graph image from the static/images directory
+    return send_from_directory(GRAPH_FOLDER, filename)
 
 @app.route("/api/v1.0/drivers")
 def drivers():
