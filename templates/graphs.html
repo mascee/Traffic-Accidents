@@ -8,7 +8,9 @@
         /* Global Styles */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
+            background-image: url('https://images5.alphacoders.com/134/thumb-1920-1346556.png'); 
+            background-size: cover;  
+            background-position: center; 
             color: #333;
             margin: 0;
             padding: 0;
@@ -156,21 +158,21 @@
                 
                 // Set the corresponding description based on the selected graph
                 var descriptions = {
-                    'day_night.png': 'This graph shows the distribution of traffic incidents during day and night.',
-                    'hourly.png': 'This graph represents accident frequency during different hours of the day.',
-                    'daily.png': 'This graph visualizes accident data on a daily basis.',
-                    'monthly.png': 'This graph compares the number of accidents in each month.',
-                    'yearly.png': 'This graph displays accident trends across different years.',
+                    'day_night.png': 'This pie chart depicts the distribution of accidents occurring during the day and night. The chart indicates that 69.08% of accidents happen during the day, while 30.92% occur at night. This suggests that daytime accidents are more frequent, potentially due to higher traffic volumes or increased activity during daylight hours.',
+                    'hourly.png': 'This line graph shows the hourly distribution of traffic accidents in the U.S. The data reveals two peak times for accidents: early morning around 6–8 AM, likely due to rush hour traffic, and late afternoon around 4–6 PM, corresponding to evening commutes. The number of accidents is significantly lower during late-night hours, reflecting reduced traffic activity during this period.',
+                    'daily.png': 'This bar chart illustrates the distribution of traffic accidents across the days of the week. Accidents are most frequent on weekdays, with Friday showing the highest count, likely due to increased activity before the weekend. Conversely, accident numbers drop significantly on Saturday and Sunday, reflecting lighter traffic and reduced commuting. This pattern highlights the impact of workweek dynamics on accident occurrences.',
+                    'monthly.png': 'This graph compares the number of accidents in each month. Higher traffic during holidays (e.g., December) and vacation months (June-August) leads to more accidents. Risky behaviors like speeding and driving under the influence often rise during holiday and vacation periods.',
+                    'yearly.png': 'This graph displays accident trends across different years. Graph shows trends like COVID-19 decrease since there was less people in the traffic and right after the COVID-19 period there is a huge jump in the graph since more and more people went into traffic with less concern. ',
                     'yearly_severity.png': 'This graph shows accident severity across years.',
-                    'weather_condition.png': 'This graph compares accident severity based on weather conditions.',
+                    'weather_condition.png': 'This graph compares the impact of different weather conditions on accidents, expressed as a percentage. Even though Snowy conditions are more dangereous, high percentage of Rainy conditions is due to more people go out to drive Rainy conditions rather then Snowy conditions. ',
                     'weather_severity.png': 'This graph highlights the relationship between weather and accident severity.',
                     'humidity.png': 'This graph explores the correlation between humidity levels and accident rates.',
-                    'temperature.png': 'This graph examines how temperature influences accident occurrence.',
-                    'visibility.png': 'This graph analyzes the impact of visibility on accident frequency.',
+                    'temperature.png': 'This graph examines how temperature influences accident occurrence. More accidents happen on Fair weather conditions since there are more people in the traffic.',
+                    'visibility.png': 'This graph analyzes the impact of visibility on accident frequency. After inspecting the dataset more people go out of Fair visibility (10mil) conditions hence more traffic accidents occur.',
                     'infrastructure.png': 'This graph highlights the role of infrastructure in accident occurrences.',
                     'state_percapita.png': 'This graph compares accident rates per capita across states.',
-                    'state.png': 'A detailed view of accident data by state.',
-                    'city.png': 'This graph shows accident data by city.'
+                    'state.png': 'A detailed view of accident data by state. More population means more accident data.',
+                    'city.png': 'This graph shows the Top 50 US cities with the most accident data.'
                 };
 
                 // If there's a description for the selected graph, display it

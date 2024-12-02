@@ -36,6 +36,87 @@ let allMarkers = [];
 let selectedYear = "All";
 let selectedWeather = "All";
 
+// Add the choropleth layer for licensed drivers
+
+function getDriversColor(driversCount) {
+  return driversCount > 20000000
+    ? "#FFD700"
+    : driversCount > 15000000
+    ? "#FFDF00"
+    : driversCount > 10000000
+    ? "#FFEB4D"
+    : driversCount > 5000000
+    ? "#FFF27D"
+    : driversCount > 1000000
+    ? "#FFF7A6"
+    : driversCount > 500000
+    ? "#FFFBCC"
+    : driversCount > 100000
+    ? "#FFFDE5"
+    : "#FFFFF0";
+}
+
+let driversChoroplethLayer = null;
+
+function addDriversChoropleth() {
+  d3.csv(driversDataPath)
+    .then((driversData) => {
+      d3.json(geoJsonPath)
+        .then((geoJsonData) => {
+          const driversByState = {};
+
+          driversData.forEach((record) => {
+            const stateAbbr = record.State.trim();
+            const driversCount = +record.Drivers;
+            const fullStateName = stateMapping[stateAbbr];
+            if (fullStateName && driversCount) {
+              driversByState[fullStateName] = driversCount;
+            }
+          });
+
+          // Add drivers data to GeoJSON features
+          geoJsonData.features.forEach((feature) => {
+            const stateName = feature.properties.name;
+            feature.properties.driversCount = driversByState[stateName] || 0;
+          });
+
+          // Create and add the choropleth layer
+          driversChoroplethLayer = L.geoJson(geoJsonData, {
+            style: (feature) => {
+              const driversCount = feature.properties.driversCount;
+              return {
+                fillColor: getDriversColor(driversCount),
+                weight: 1,
+                opacity: 1,
+                color: "white",
+                fillOpacity: 0.7,
+              };
+            },
+            onEachFeature: (feature, layer) => {
+              const driversCount = feature.properties.driversCount;
+              const stateName = feature.properties.name;
+              layer.bindPopup(`
+                <h3>${stateName}</h3>
+                <p><strong>Licensed Drivers:</strong> ${driversCount ? driversCount.toLocaleString() : "No data"}</p>
+              `);
+            },
+          });
+
+          // Add the choropleth layer to the map
+          driversChoroplethLayer.addTo(myMap);
+
+          // Add layer toggle control
+          L.control.layers(null, { "Drivers Choropleth": driversChoroplethLayer }, { position: "bottomleft" }).addTo(myMap);
+        })
+        .catch((error) => console.error("Error loading GeoJSON data: ", error));
+    })
+    .catch((error) => console.error("Error loading drivers data: ", error));
+}
+
+// Call the function to add the choropleth layer
+addDriversChoropleth();
+
+
 // Map weather conditions to simplified categories based on the new filtering criteria
 const weatherCategories = {
   windy: [
@@ -121,7 +202,7 @@ d3.csv(csvPath)
 
         // Create the marker
         const marker = L.circleMarker([+record.Start_Lat, +record.Start_Lng], {
-          radius: 5,
+          radius: 2,
           color: weatherColor,
           fillOpacity: 0.6,
         }).bindPopup(`
@@ -186,82 +267,4 @@ document.getElementById("weatherFilter").addEventListener("change", (event) => {
   updateMap();
 });
 
-// Add the choropleth layer for licensed drivers
 
-function getDriversColor(driversCount) {
-  return driversCount > 20000000
-    ? "#FFD700"
-    : driversCount > 15000000
-    ? "#FFDF00"
-    : driversCount > 10000000
-    ? "#FFEB4D"
-    : driversCount > 5000000
-    ? "#FFF27D"
-    : driversCount > 1000000
-    ? "#FFF7A6"
-    : driversCount > 500000
-    ? "#FFFBCC"
-    : driversCount > 100000
-    ? "#FFFDE5"
-    : "#FFFFF0";
-}
-
-let driversChoroplethLayer = null;
-
-function addDriversChoropleth() {
-  d3.csv(driversDataPath)
-    .then((driversData) => {
-      d3.json(geoJsonPath)
-        .then((geoJsonData) => {
-          const driversByState = {};
-
-          driversData.forEach((record) => {
-            const stateAbbr = record.State.trim();
-            const driversCount = +record.Drivers;
-            const fullStateName = stateMapping[stateAbbr];
-            if (fullStateName && driversCount) {
-              driversByState[fullStateName] = driversCount;
-            }
-          });
-
-          // Add drivers data to GeoJSON features
-          geoJsonData.features.forEach((feature) => {
-            const stateName = feature.properties.name;
-            feature.properties.driversCount = driversByState[stateName] || 0;
-          });
-
-          // Create and add the choropleth layer
-          driversChoroplethLayer = L.geoJson(geoJsonData, {
-            style: (feature) => {
-              const driversCount = feature.properties.driversCount;
-              return {
-                fillColor: getDriversColor(driversCount),
-                weight: 1,
-                opacity: 1,
-                color: "white",
-                fillOpacity: 0.7,
-              };
-            },
-            onEachFeature: (feature, layer) => {
-              const driversCount = feature.properties.driversCount;
-              const stateName = feature.properties.name;
-              layer.bindPopup(`
-                <h3>${stateName}</h3>
-                <p><strong>Licensed Drivers:</strong> ${driversCount ? driversCount.toLocaleString() : "No data"}</p>
-              `);
-            },
-          });
-
-          // Add the choropleth layer to the map
-          driversChoroplethLayer.addTo(myMap);
-
-          // Add layer toggle control
-          L.control.layers(null, { "Drivers Choropleth": driversChoroplethLayer }, { position: "bottomleft" }).addTo(myMap);
-        })
-        .catch((error) => console.error("Error loading GeoJSON data: ", error));
-    })
-    .catch((error) => console.error("Error loading drivers data: ", error));
-}
-
-// Call the function to add the choropleth layer
-addDriversChoropleth();
