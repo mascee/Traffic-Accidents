@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accidents Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .links {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .links a {
+            display: inline-block;
+            margin: 10px;
+            font-size: 18px;
+            color: #007BFF;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .links a:hover {
+            color: #0056b3;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* Map Button Styling */
+        .map-btn-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .map-btn-container button {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .map-btn-container button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Query Traffic Accidents</h1>
+        <form action="/api/v1.0/accidents" method="get">
+            <!-- State selection dropdown -->
+            <div class="form-group">
+                <label for="state">Select State:</label>
+                <select id="state" name="state">
+                    {% for key, value in state_mapping.items() %}
+                        <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Limit selection dropdown -->
+            <div class="form-group">
+                <label for="limit">Select Limit:</label>
+                <select id="limit" name="limit">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                </select>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit">Submit</button>
+        </form>
+        
+        <hr/>
+        
+        <!-- API route links -->
+        <div class="links">
+            <a href='/api/v1.0/accidents'>Accidents JSON</a>
+            <a href='/api/v1.0/drivers'>Drivers JSON</a>
+            <a href='/api/v1.0/accidents_by_city'>Accidents by City JSON</a>
+            <a href='/api/v1.0/accidents_by_state'>Accidents by State JSON</a>
+            <a href='/api/v1.0/graph'>Graph Views</a>
+        </div>
+
+        <!-- Button for opening the map -->
+        <div class="map-btn-container">
+            <button onclick="window.location.href='/map';">View Interactive Map</button>
+        </div>
+    </div>
+</body>
+</html>

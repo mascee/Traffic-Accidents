@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>US Accident Map</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- D3.js -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Leaflet Choropleth Plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-dataclassification/dist/leaflet-dataclassification.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-dataclassification/dist/leaflet-dataclassification.min.css" />
+
+  <!-- Your Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <script>
+    const csvPath = "{{ url_for('static', filename='data/US_Accidents_March23_1_percent.csv') }}";
+  </script>
+  
+  <script>
+    const driversDataPath = "{{ url_for('static', filename='data/Licensed_Drivers_clean.csv') }}";
+  </script>
+
+  <script>
+  const geoJsonPath = "{{ url_for('static', filename='data/us-states.json') }}";
+  </script>
+
+
+  
+
+  
+
+  <style>
+    /* Legend styling for choropleth */
+    .info.legend {
+      background: white;
+      line-height: 1.5em;
+      padding: 6px 8px;
+      font: 14px Arial, sans-serif;
+      border: 2px solid rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+    }
+
+    .info.legend i {
+      width: 18px;
+      height: 18px;
+      float: left;
+      margin-right: 8px;
+      opacity: 0.8;
+    }
+
+    #map-id {
+      height: 90vh; 
+      width: 100%;
+    }
+
+    /* Filter container */
+    #filter-container {
+      padding: 10px;
+      background-color: white;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #filter-container select {
+      font-size: 16px;
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    /* Legend container */
+    .legend-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 1000;
+    }
+    
+    .legend-container h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .legend-item i {
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Filter container -->
+  <div id="filter-container">
+    <label for="yearFilter">
+      <strong>Year:</strong>
+      <select id="yearFilter">
+        <option value="All">All Years</option>
+        <option value="2016">2016</option>
+        <option value="2017">2017</option>
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+      </select>
+    </label>
+
+    <label for="weatherFilter">
+      <strong>Weather:</strong>
+      <select id="weatherFilter">
+        <option value="All">All Weather</option>
+        <option value="windy">Windy</option>
+        <option value="rainy">Rainy</option>
+        <option value="foggy">Foggy</option>
+        <option value="snowy">Snowy</option>
+        <option value="clear">Clear/Fair</option>
+        <option value="cloudy">Cloudy</option>
+      </select>
+    </label>
+  </div>
+
+  <!-- Div for the map -->
+  <div id="map-id"></div>
+
+
+  <!-- JavaScript Logic -->
+  <script src="{{ url_for('static', filename='js/logic.js') }}"></script>
+</body>
+</html>
