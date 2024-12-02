@@ -10,8 +10,8 @@ app = Flask(__name__)
 DB_PATH = "data/traffic_accidents.sqlite"
 engine = create_engine(f"sqlite:///{DB_PATH}")
 
-#Mapping all states for converting full names to abbriviations.
-#We need this so state names in both CSV files have the same column States
+# Mapping all states for converting full names to abbreviations.
+# We need this so state names in both CSV files have the same column States
 state_mapping = {
     'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California',
     'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'FL': 'Florida', 'GA': 'Georgia',
@@ -34,62 +34,77 @@ reverse_state_mapping = {
 # Flask routes
 @app.route("/")
 def home():
-    return ("""
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accidents</title>
-</head>
-<body>
-    <h1>Query Traffic Accidents</h1>
-    <form action="/api/v1.0/accidents" method="get">
-        <!-- Select for State -->
-        <label for="state">Select State:</label>
-        <select id="state" name="state">
-""" + "".join(f'<option value="{key}">{value}</option>' for key, value in state_mapping.items()) + """
-        </select>
-        <br><br>
-        
-        <!-- Select for Limit -->
-        <label for="limit">Select Limit:</label>
-        <select id="limit" name="limit">
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="200">200</option>
-        </select>
-        <br><br>
-
-        <!-- Submit Button -->
-        <button type="submit">Submit</button>
-    </form>
-            
-    <hr/>
-            
-    <a href='/api/v1.0/accidents'>/api/v1.0/accidents</a><br/>
-    <a href='/api/v1.0/drivers'>/api/v1.0/drivers</a><br/>
-    <a href='/api/v1.0/accidents_by_city'>/api/v1.0/accidents_by_city</a><br/r>
-    <a href='/api/v1.0/graph'>/api/v1.0/graph</a><br/r>
-
-</body>
-</html>
-"""
-    )
+    return render_template("home.html", state_mapping=state_mapping)
 
 @app.route("/api/v1.0/accidents")
 def accidents():
     state = request.args.get("state", default="CA")
     limit = request.args.get("limit", default="10")
 
-    accidents_df = pd.read_sql(
-        text("SELECT * FROM accidents WHERE state=:state LIMIT :limit"),
-        engine,
-        params={"state": state, "limit": limit})
+    # Query the database for accidents based on the selected state and limit
+    query = text("SELECT * FROM accidents WHERE state=:state LIMIT :limit")
+    accidents_df = pd.read_sql(query, engine, params={"state": state, "limit": limit})
+
+    # Return the results as JSON
     return jsonify(accidents_df.to_dict(orient="records"))
 
+@app.route("/api/v1.0/drivers")
+def drivers():
+    drivers_df = pd.read_sql("SELECT * FROM licensed_drivers", engine)
+    return jsonify(drivers_df.to_dict(orient="records"))
+
+# Accidents grouped by city
+@app.route("/api/v1.0/accidents_by_city")
+def accidents_by_city():
+    city = request.args.get("city")
+
+    if city:
+        # Query for a specific city
+        query = text("""
+            SELECT City, COUNT(*) as accident_count
+            FROM accidents
+            WHERE City = :city
+            GROUP BY City
+        """)
+        result = pd.read_sql(query, engine, params={"city": city})
+    else:
+        # Query for all cities, ordered by accident count
+        query = text("""
+            SELECT City, COUNT(*) as accident_count
+            FROM accidents
+            GROUP BY City
+            ORDER BY accident_count DESC
+        """)
+        result = pd.read_sql(query, engine)
+
+    # Convert the result to JSON and return
+    return jsonify(result.to_dict(orient="records"))
+
+@app.route("/api/v1.0/accidents_by_state")
+def accidents_by_state():
+    state = request.args.get("state")
+
+    if state:
+        # Query for a specific state
+        query = text("""
+            SELECT state, COUNT(*) as accident_count
+            FROM accidents
+            WHERE state = :state
+            GROUP BY state
+        """)
+        result = pd.read_sql(query, engine, params={"state": state})
+    else:
+        # Query for all states, ordered by accident count
+        query = text("""
+            SELECT state, COUNT(*) as accident_count
+            FROM accidents
+            GROUP BY state
+            ORDER BY accident_count DESC
+        """)
+        result = pd.read_sql(query, engine)
+
+    # Convert the result to JSON and return
+    return jsonify(result.to_dict(orient="records"))
 
 GRAPH_FOLDER = os.path.join(app.root_path, 'static/images')
 
@@ -98,9 +113,6 @@ graph_files = ['day_night.png', 'hourly.png', 'daily.png', 'monthly.png', 'yearl
                'yearly_severity.png', 'weather_condition.png', 'weather_severity.png', 
                'humidity.png', 'temperature.png', 'visibility.png', 'infrastructure.png', 
                'state_percapita.png', 'state.png', 'city.png']
-
-# A dictionary for explanations
-
 
 @app.route("/api/v1.0/graph")
 def graph():
@@ -113,41 +125,10 @@ def serve_graph(filename):
     # Serve the graph image from the static/images directory
     return send_from_directory(GRAPH_FOLDER, filename)
 
-@app.route("/api/v1.0/drivers")
-def drivers():
-    drivers_df = pd.read_sql("SELECT * FROM licensed_drivers", engine)
-    return jsonify(drivers_df.to_dict(orient="records"))
-
-# Accidents grouped by city
-@app.route("/api/v1.0/accidents_by_city")
-def accidents_by_city():
-    city = request.args.get("city") 
-    
-    if city:
-        # Query for a specific city
-        query = text("""
-            SELECT City, COUNT(*) as accident_count
-            FROM accidents
-            WHERE City = :city
-            GROUP BY City
-        """)
-        result = pd.read_sql(query, engine, params={"city": city})
-    else:
-        # Query for all cities
-        query = text("""
-            SELECT City, COUNT(*) as accident_count
-            FROM accidents
-            GROUP BY City
-            ORDER BY accident_count DESC
-        """)
-        result = pd.read_sql(query, engine)
-
-    # Convert the result to JSON
-    return jsonify(result.to_dict(orient="records"))
-
-
-
-
+# Map route to render interactive map page
+@app.route('/map')
+def index():
+    return render_template('index.html')
 
 # Run Flask app
 if __name__ == "__main__":
