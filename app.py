@@ -130,6 +130,10 @@ def serve_graph(filename):
 def index():
     return render_template('index.html')
 
+@app.route('/')
+def presentation():
+    return render_template('home.html')
+
 # Run Flask app
 if __name__ == "__main__":
     app.run(debug=True)
