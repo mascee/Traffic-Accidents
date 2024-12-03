@@ -10,7 +10,8 @@ Our analysis explores correlations between environmental, temporal, and structur
 
 ## Instructions for Use and Interaction
 1. **Interactive Map:**
-   - Explore accident hotspots across the U.S. using our Leaflet-powered interactive map. [https://mascee.github.io/Traffic-Accidents/](https://mascee.github.io/Traffic-Accidents/)
+   -Our team member Nathaly Lamas was working on the interactive map but had issues with submitting to Github. She sent her work via Google Drive to Olga Petrova, and Olga submitted her work on Github.
+   - Explore accident hotspots across the U.S. using our Leaflet-powered interactive map.
    - Filter data by year and weather conditions using dropdown menus.
    - Click on Choropleth map to see the amount of driver per state
 
