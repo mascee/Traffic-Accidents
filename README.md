@@ -27,6 +27,7 @@ Our analysis explores correlations between environmental, temporal, and structur
    - Start a local server (if applicable) to view the map and visualizations in a web browser.
    - Interactive map can be run from VS code. Right click on index.html and open with Live Server
    - To run app.py in the command line type python app.py.
+   - You can see all graphs, all JSON files, interactive map in JS and link to our presentation, if you "run python app.py"
 
 4. **Data cleaning.** 
    - The original data we used was from [ https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents]( https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents). The original csv file was 3Gb and too large to submit to Github. We put it to gitignore to avoid accidentally submitting it. We made a program downsample.py to downsample data to 1% so we can run the program and share data files. The data set was still large enough to use in data modeling.
