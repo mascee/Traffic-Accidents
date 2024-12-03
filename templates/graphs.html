@@ -126,9 +126,21 @@
             <label for="graph-select"><strong>Choose a graph:</strong></label>
             <select id="graph-select" class="graph-dropdown" onchange="showGraph(this.value)">
                 <option value="">Select a graph</option>
-                {% for graph in graph_files %}
-                    <option value="{{ graph }}">{{ graph.split('.')[0] }}</option>
-                {% endfor %}
+                <option value="day_night.png">Day and Night</option>
+                <option value="hourly.png">Time of Day</option>
+                <option value="daily.png">Days of the Week</option>
+                <option value="monthly.png">Months of the Year</option>
+                <option value="yearly.png">Accidents by Years</option>
+                <option value="yearly_severity.png">Severity by Years</option>
+                <option value="weather_condition.png">Weather Condition</option>
+                <option value="weather_severity.png">Weather Condition Severity</option>
+                <option value="humidity.png">Humidity</option>
+                <option value="temperature.png">Temperature</option>
+                <option value="visibility.png">Visibility</option>
+                <option value="infrastructure.png">Infrastructure</option>
+                <option value="state_percapita.png">States per Capita</option>
+                <option value="state.png">State Total</option>
+                <option value="city.png">Cities Top 50</option>
             </select>
         </div>
 
